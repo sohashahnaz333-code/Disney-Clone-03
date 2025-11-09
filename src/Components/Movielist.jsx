@@ -1,80 +1,71 @@
-import React, {useEffect ,useState, useRef}  from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { FaChevronLeft } from "react-icons/fa6";
-import { FaChevronRight } from "react-icons/fa";
-import MovieCard from './MovieCard';
-import HrMovieCard from './HrMovieCard';
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import MovieCard from "./MovieCard";
+import HrMovieCard from "./HrMovieCard";
 
-//https://image.tmdb.org/t/p/w500/fwh8QyEaCmfPnUjHQTwSgOMA5tt.jpg
-//const getMovieByGenreId = axios.get('https://api.themoviedb.org/3/discover/movie?api_key=f634f5df8dca3089b42636220d80ebb3');
-function Movielist({genreId,index_}) {
-    const [movieList,  setMovielist]=useState([])
-     const elementRef=useRef(null);
-    
- useEffect(()=>{
-  async function getMovieByGenreId(){
-    try{
-      const res= await axios.get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=f634f5df8dca3089b42636220d80ebb3&with_genres=${genreId}`
-      );
-      console.log(res.data.results);
-    
-       setMovielist(res.data.results);
+function Movielist({ genreId, index_ }) {
+  const [movieList, setMovieList] = useState([]);
+  const elementRef = useRef(null);
 
-    }catch (err){
-    console.log(err);
+  useEffect(() => {
+    async function getMovieByGenreId() {
+      try {
+        const res = await axios.get(
+          `https://api.themoviedb.org/3/discover/movie?api_key=f634f5df8dca3089b42636220d80ebb3&with_genres=${genreId}`
+        );
+        setMovieList(res.data.results);
+      } catch (err) {
+        console.log(err);
+      }
     }
-  } 
-  if(genreId){
-    getMovieByGenreId();
+    if (genreId) getMovieByGenreId();
+  }, [genreId]);
 
-  }
-   
- },[genreId]);
+  const sliderRight = (element) => {
+    console.log("Slider Right Clicked:", element);
+    if (element) element.scrollLeft += 500;
+  };
 
- //left Scroll function
-  const SliderRight=(element)=>{
-    element.scrollLeft+=300;
-  }
- 
+  const sliderLeft = (element) => {
+    if (element) element.scrollLeft -= 500;
+  };
 
-  //left Scroll function
-  const SliderLeft=(element)=>{
-    element.scrollLeft-=300;
-  }
+  return (
+    <div className="relative bg-gray-900 py-6 overflow-hidden">
+      {/* Left Scroll */}
+      <FaChevronLeft
+        onClick={() => sliderLeft(elementRef.current)}
+        className="hidden md:block text-[40px] text-white absolute left-0 z-[50] p-2 
+        top-1/2 transform -translate-y-1/2 cursor-pointer"
+      />
+
+      {/* Movie Slider */}
+      <div
+        ref={elementRef}
+        className="flex gap-4 overflow-x-auto hover:overflow-visible scrollbar-hide scroll-smooth px-6 md:px-1"
+      >
 
 
+        {movieList.map((item, i) => (
+          <div key={i} className="mr-4 first:ml-4" >
+            {index_ % 3 === 0 ? (
+              <MovieCard movie={item} />
+            ) : (
+              <HrMovieCard movie={item} />
+            )}
+          </div>
+        ))}
+      </div>
 
-
-  return ( 
-        <div className='relative'>
-           <FaChevronLeft
-             onClick={() => SliderLeft(elementRef.current)}
-              className={`hidden md:block text-[50px] text-white p-2 z-10 cursor-pointer absolute 
-              ${index_ % 3 === 0 ? 'mt-[80px]' : 'mt-[150px]'}`}
-              />
-
-        <div ref={elementRef} 
-          className='flex overflow-x-auto gap-8 scrollbar-hide space-x-3 scroll-smooth p-2'>
-          { movieList.map((item,i)=>(
-               <>
-               {index_%3===0
-                  ?<MovieCard key={i} movie={item}/>
-                  :<HrMovieCard key={i}movie={item}/>
-                }
-               </>
-    
-            ))}
-         </div> 
-         <FaChevronRight onClick={()=>SliderRight(elementRef.current)}
-              className={`hidden md:block text-white text-[50px]  
-              absolute p-2 z-10 top-0   cursor-pointer right-0
-               ${index_%3===0? 'mt-[80px]' : 'mt-[150px]'}`}
-              />
-     </div>
-  )
+      {/* Right Scroll */}
+      <FaChevronRight
+        onClick={() => sliderRight(elementRef.current)}
+        className="hidden md:block text-[40px] text-white absolute right-0 z-[50] p-2 
+        top-1/2 transform -translate-y-1/2 cursor-pointer"
+      />
+    </div>
+  );
 }
 
-
-export default Movielist
-
+export default Movielist;

@@ -8,13 +8,13 @@ import GENRELIST from './Components/GENRELIST';
 function App() {
   return (
     <div className="App">
-         <Header/>
+      <div className=' bg-[#161827]'>
+        <Header/>
          <Slider/>
          <ProductionHouse/>
          <GENRELIST/>
-        
+      </div>
      </div>  
-  
   )
 }
 
